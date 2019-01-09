@@ -2,9 +2,395 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Document</title>
+	<title>Title</title>
+
+	<style>
+		body{
+			margin: 0;
+			overflow: hidden;//隐藏body窗口区域滚动条
+		}
+		div{
+			padding: 30px;
+			width: 300px;
+		}
+	</style>
+	<!--引入three.js三维引擎-->
+	<script src="http://www.yanhuangxueyuan.com/threejs/build/three.js"></script>
+	<script src="http://www.yanhuangxueyuan.com/threejs/examples/js/controls/OrbitControls.js"></script>
+	
+	<script src="http://www.yanhuangxueyuan.com/threejs/examples/js/loaders/STLLoader.js"></script>
+	<script src="./FBXLoader.js"></script>
+	<script src="./inflate.min.js"></script>
+	<script src="http://www.yanhuangxueyuan.com/threejs/examples/js/loaders/OBJLoader.js"></script>
+	<script src="http://www.yanhuangxueyuan.com/threejs/examples/js/loaders/MTLLoader.js"></script>
+	
+
+	<!--引入three.js控件-->
+	
 </head>
 <body>
-	你好，我的作品
-</body>
-</html>
+<button name = "button" onclick = "dengkong()" type = "button" style = "position:absolute;">开关灯</button>
+<button name = "chuanglian" onclick = "chuanglian()" type = "button" style = "position:absolute;left:80px;">亮度加</button>
+<button name = "misic" onclick = "misic()" type = "button" style = "position:absolute;left:150px;">随机变色</button>
+<button name = "misic" onclick = "clk()" type = "button" style = "position:absolute;left:260px;">窗帘开</button>
+<button name = "misic" onclick = "clt()" type = "button" style = "position:absolute;left:350px;">窗帘停</button>
+<button name = "misic" onclick = "clg()" type = "button" style = "position:absolute;left:420px;">窗帘关</button>
+<button name = "misic" onclick = "dsms()" type = "button" style = "position:absolute;left:520px;">电视模式</button>
+
+
+<div></div>
+<video id="video" controls style = "display:none" >
+       <source src="gbqq.mp4" type='video/mp4' >
+</video>
+	<script>
+
+//摁键控制
+function dengkong(){
+
+console.log(1);
+if(pointLight.intensity){
+	pointLight.intensity = 0;//强度
+	return;
+}
+pointLight.intensity = 5;//强度
+
+
+
+}
+function chuanglian(){
+
+console.log(2);
+if(pointLight.intensity==5){
+	pointLight.intensity = 5;
+	return;
+}else{
+	pointLight.intensity=pointLight.intensity+0.5;//强度
+}
+}
+function misic(){
+console.log(3);
+var r = Math.random();
+var g = Math.random();
+var b = Math.random();
+pointLight.color =new THREE.Color(r,g,b);
+console.log(pointLight.color)
+}
+
+
+var tt;
+function clt(){
+	Action.paused = true;
+    tt = Action.time;
+    console.log(tt);
+}
+
+function clk(){
+	if(Action.time==0||Action.time >= 3.3){
+		clip.duration = 1.6;//终止点
+		Action.loop = 2200;
+		Action.time = 0;
+		Action.paused = false;
+		Action.play();
+	}else if(tt>=0 && tt<=1.66){
+		clip.duration = 1.6;
+		Action.loop = 2200;
+		Action.time = tt;
+		Action.paused = false;
+		Action.play();
+	}else{
+		clip.duration = 1.6;
+		Action.loop = 2200;
+		Action.time = 3.33-tt;
+		Action.paused = false;
+		Action.play();
+	};
+	tt = 1.66;
+}
+
+function clg(){
+	if(Action.time==1.6){
+		clip.duration = 3.33;//终止点
+		Action.loop = 2200;
+		Action.time = 1.66;
+		Action.paused = false;
+		Action.play();
+	}else if(tt>=0 && tt<=1.66){
+		clip.duration = 3.33;
+		Action.loop = 2200;
+		Action.time = 3.33-tt;
+		Action.paused = false;
+		Action.play();
+	}else{
+		clip.duration = 3.33;
+		Action.loop = 2200;
+		Action.time = tt;
+		Action.paused = false;
+		Action.play();
+	};
+	tt = 3.33;
+}
+var Action;
+var clip;
+var mixer = null;
+
+	 //窗帘动画		    
+var loader = new THREE.FBXLoader();
+        loader.load("1.fbx", function (obj1) {
+        	scene.add(obj1);
+        	console.log(obj1);
+            obj1.scale.set(0.1,0.1,0.1);
+            
+            mixer = new THREE.AnimationMixer(scene);
+            mixer.timeScale = 1;
+            clip = obj1.animations[0];
+            Action = mixer.clipAction(clip);
+            tt = Action.time;
+            Action.clampWhenFinished = true;
+            //Action.loop =2200;
+            
+});
+
+
+
+
+         /**
+         * 创建场景对象
+
+         */
+
+         var scene=new THREE.Scene();
+
+         //辅助坐标系
+         var axisHelper = new THREE.AxisHelper(400);
+        scene.add(axisHelper);
+
+
+        /**
+          * 灯泡
+          */
+        var geometry = new THREE.BoxGeometry( 10, 10, 10 );
+		var material = new THREE.MeshBasicMaterial( {color: 0x000000} );
+		var cube = new THREE.Mesh( geometry, material );
+		cube.position.set(-452.3633,-75.4006,21.4113);
+		scene.add( cube );
+		//点光源
+		var pointColor = "#ffffff";
+        var pointLight = new THREE.PointLight(pointColor);
+
+        pointLight.distance = 4000;//距离，决定了光线可以照射多远
+        pointLight.intensity = 3;//强度
+        pointLight.position.set(-452.3633,-75.4006,21.4113);
+        scene.add(pointLight);
+
+   // -4523.633  -214.113  -754.006
+ //点光
+
+       var spotLight = new THREE.SpotLight(0x999999);
+       spotLight.position.set(0,1000,0);//点光源位置
+       spotLight.castShadow = false;
+      //spotLight.target = cube;
+      
+      
+     
+       var spotLightHelper = new THREE.SpotLightHelper(spotLight);
+
+       //scene.add(spotLight);//点光源添加到场景中
+       //scene.add(spotLightHelper);//点光源添加到场景中
+
+
+         //环境光
+         var ambient=new THREE.AmbientLight(0x333333);
+         //scene.add(ambient);
+
+
+
+		var width = 900;//窗口宽度
+        var height = 600;//窗口高度
+        var k = width/height;//窗口宽高比
+        var s = 100;//三维场景缩放系数
+
+
+
+        //创建相机对象
+        var camera=new THREE.PerspectiveCamera(60,k,1,5000);
+        camera.position.set(-700,-100,200);//设置相机位置
+		
+
+
+
+      
+		
+		
+		 //墙体
+
+			    var mtlLoader = new THREE.MTLLoader();
+			    mtlLoader.setPath('./');
+			    mtlLoader.load('1.mtl', function(materials) {
+			
+			        materials.preload();
+			
+			        var objLoader = new THREE.OBJLoader();
+			        objLoader.setMaterials(materials);
+			        objLoader.setPath('./');
+			        objLoader.load('1.obj', function(object) {
+			
+			          
+			            object.rotation.y = 0;
+			            object.scale.set(0.1,0.1,0.1);
+			           scene.add(object);
+
+ 
+        
+         
+
+        
+
+
+
+			
+			        });
+			    });
+
+
+
+
+//电视柜
+  var mtlLoader = new THREE.MTLLoader();
+			    mtlLoader.setPath('./');
+			    mtlLoader.load('2.mtl', function(materials) {
+			
+			        materials.preload();
+			
+			        var objLoader = new THREE.OBJLoader();
+			        objLoader.setMaterials(materials);
+			        objLoader.setPath('./');
+			        objLoader.load('2.obj', function(object) {
+			
+			            object.position.y = 0;
+			            object.position.x = 0;
+			            object.position.z = 0;
+			           
+			            object.rotation.y = 0;
+			            object.scale.set(0.1,0.1,0.1);
+			            scene.add(object);
+			            camera.lookAt(new THREE.Vector3( -442.52,-213.0181,-164.7649));//设置相机方向(指向的场景对象)
+			
+			        });
+			    });
+
+/**
+          * 电视
+          */
+        var video = document.getElementById('video');
+        console.log(video);
+        
+        var texture = new THREE.VideoTexture(video);
+        
+
+		texture.wrapS = texture.wrapT = THREE.ClampToEdgeWrapping;
+		texture.minFilter = THREE.LinearFilter;
+		
+
+        var geometry = new THREE.PlaneGeometry(114.5214, 65.0784);
+		var material = new THREE.MeshBasicMaterial( {
+			//color: 0x000000,
+			map:texture,
+
+
+		} );
+		var cube = new THREE.Mesh( geometry, material );
+		cube.position.set(-442.52,-213.0181,-164.7649);
+		scene.add( cube );
+		
+
+		function dsms(){
+			Media = document.getElementById('video');
+			clg();
+			pointLight.intensity = 0.5;//强度
+			console.log(6);
+			if(video.paused){
+					Media.play();
+	
+			}else{
+				Media.pause();
+						}
+				}
+
+   // -4523.633  -214.113  -754.006
+
+
+			    //外景
+  var mtlLoader = new THREE.MTLLoader();
+			    mtlLoader.setPath('./');
+			    mtlLoader.load('3.mtl', function(materials) {
+			
+			        materials.preload();
+			
+			        var objLoader = new THREE.OBJLoader();
+			        objLoader.setMaterials(materials);
+			        objLoader.setPath('./');
+			        objLoader.load('3.obj', function(object) {
+			
+			            object.position.y = 0;
+			            object.position.x = 0;
+			            object.position.z = 0;
+
+			            object.rotation.y = 0;
+			            object.scale.set(0.1,0.5,0.5);
+			            //scene.add(object);
+			
+			        });
+			    });
+  //监听屏幕变化
+		window.onresize = function(){
+	
+ 		//console.log(window.innerWidth);
+ 		//width = window.innerWidth;
+ 		//height = window.innerHeight;
+					}
+
+
+
+
+
+
+
+
+
+
+      
+      
+         /**
+          * 创建渲染器对象
+          */
+        var renderer=new THREE.WebGLRenderer();
+		renderer.setSize(width,height);
+		renderer.setClearColor(0xbbbbbb,1);//设置背景颜色
+		renderer.shadowMap.enabled = true;
+
+        document.getElementsByTagName('div')[0].appendChild(renderer.domElement);//body元素中插入canvas对象
+
+         var clock = new THREE.Clock();
+
+         //渲染操作clock.getDelta()
+         function render(){        	
+        	camera.lookAt(new THREE.Vector3( -442.52,-213.0181,-164.7649));
+        	renderer.setSize(width,height);
+        	renderer.render(scene,camera);
+        	//texture.needsUpdate = true;
+        	//mesh.rotateY(0.01);
+        	requestAnimationFrame(render);//自动渲染
+        	if(mixer){
+        		mixer.update(clock.getDelta());
+        		
+        	}
+        	
+         }
+   			 render();
+
+       
+         var controls = new THREE.OrbitControls(camera);
+        //controls.addEventListener('change',render);//更新作用
+     </script>
+ </body>
+ </html>
