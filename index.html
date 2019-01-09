@@ -39,8 +39,8 @@
 
 
 <div></div>
-<video id="video" controls  >
-       <source src="https://mitking.github.io/gbqq.mp4" type='video/mp4' >
+<video id="video" style = "display:none" >
+       <source src="gbqq.mp4" type='video/mp4' >
 </video>
 	<script>
 
@@ -282,13 +282,18 @@ var loader = new THREE.FBXLoader();
           * 电视
           */
         var video = document.getElementById('video');
-        console.log(video);
+        video.style.display = 'none';
+
+        //video.src = "https://mitking.github.io/gbqq.mp4";
+
         
         var texture = new THREE.VideoTexture(video);
-        
+        texture.minFilter = THREE.LinearFilter;
+		texture.magFilter = THREE.LinearFilter;
+		texture.format = THREE.RGBFormat;
 
-		texture.wrapS = texture.wrapT = THREE.ClampToEdgeWrapping;
-		texture.minFilter = THREE.LinearFilter;
+		//texture.wrapS = texture.wrapT = THREE.ClampToEdgeWrapping;
+		//texture.minFilter = THREE.LinearFilter;
 		
 
         var geometry = new THREE.PlaneGeometry(114.5214, 65.0784);
